@@ -16,7 +16,6 @@ public class KVStore implements Application {
 
   private Map<String, String> kvStore = new HashMap<>(); // o con un constructor 
 
-
   public interface KVStoreCommand extends Command {}
 
   public interface SingleKeyCommand extends KVStoreCommand {
@@ -70,9 +69,9 @@ public class KVStore implements Application {
       // Si está almacenada
       if (kvStore.containsKey(g.key())) {
         return new GetResult(kvStore.get(g.key()));
-      }
-    } //si no
+      } else{ //si no
       return new KeyNotFound();
+      }
     }
 
     if (command instanceof Put) {

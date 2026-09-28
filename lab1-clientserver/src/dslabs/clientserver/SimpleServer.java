@@ -6,6 +6,8 @@ import dslabs.framework.Node;
 import dslabs.framework.Result;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import dslabs.atmostonce.AMOResult;
+import dslabs.atmostonce.AMOApplication;
 
 /**
  * Simple server that receives requests and returns responses.
@@ -23,7 +25,7 @@ class SimpleServer extends Node {
    * ---------------------------------------------------------------------------------------------*/
   public SimpleServer(Address address, Application app) { //at least once, sin que dependa de application, se puede usar cualquier aplicacion que implemente la interfaz Application
     super(address);
-    this.app = app;
+    this.app = new AMOApplication<>(app);
   }
 
   @Override
@@ -31,16 +33,19 @@ class SimpleServer extends Node {
     // No initialization necessary
   }
 
+
 //garantizar que la respuesta sea de la petición que se hizo
   /* -----------------------------------------------------------------------------------------------
    *  Message Handlers
    * ---------------------------------------------------------------------------------------------*/
   private void handleRequest(Request m, Address sender) { // llega el request, y el resultado se envía al sender "cliente"
-    Result resultado = app.execute(m.command());
+    AMOResult resultado = (AMOResult) app.execute(m.command());
     /*
     reply = new Reply(resultado, m.sequenceValue());
     send(reply, sender);
+    
+    this.send(new Reply(resultado, m.sequenceValue()), sender);
     */
-    this.send(new Reply(resultado, m.sequenceValue), sender);
+    this.send(new Reply(resultado), sender);    
   }
 }
